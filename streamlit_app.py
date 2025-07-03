@@ -14,8 +14,41 @@ st.markdown("Enter your health data to estimate your 5-year hypertension risk.")
 # Inputs
 age = st.slider("Age", 18, 80, 30)
 gender = st.selectbox("Gender", ["Male", "Female"])
-bmi = st.slider("BMI", 15.0, 45.0, 25.0)
-glucose = st.slider("Glucose (mg/dL)", 70, 200, 100)
+
+bmi_input_type = st.radio(
+    "Do you know your BMI?",
+    ["I know my BMI (enter manually)", "I don't know (calculate from height & weight)"]
+)
+
+if bmi_input_type == "I know my BMI (enter manually)":
+    bmi = st.slider("BMI", 15.0, 45.0, 25.0)
+else:
+    height_cm = st.number_input("Enter your height (cm)", min_value=100, max_value=250, value=170)
+    weight_kg = st.number_input("Enter your weight (kg)", min_value=30, max_value=200, value=70)
+    height_m = height_cm / 100
+    bmi = round(weight_kg / (height_m ** 2), 1)
+    st.info(f"Calculated BMI: **{bmi}**")
+
+glucose_input_type = st.radio(
+    "Do you know your glucose level?",
+    ["I know my glucose (enter manually)", "I don't know (choose category)"]
+)
+
+if glucose_input_type == "I know my glucose (enter manually)":
+    glucose = st.slider("Glucose (mg/dL)", 70, 200, 100)
+else:
+    glucose_category = st.selectbox("Choose your estimated glucose category:", [
+        "Normal (<100 mg/dL)",
+        "Pre-Diabetic (100–125 mg/dL)",
+        "Diabetic (≥126 mg/dL)"
+    ])
+    # Map category to typical average value
+    glucose = {
+        "Normal (<100 mg/dL)": 90,
+        "Pre-Diabetic (100–125 mg/dL)": 110,
+        "Diabetic (≥126 mg/dL)": 140
+    }[glucose_category]
+
 systolic_bp = st.slider("Systolic BP", 90, 180, 120)
 diastolic_bp = st.slider("Diastolic BP", 60, 120, 80)
 smoker = st.selectbox("Smoker", ["Yes", "No"])
